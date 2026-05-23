@@ -96,43 +96,6 @@ def _make_sampler(
     size: int = -1,
     advance: int = 0,
 ) -> Optional[Sampler]:
-    # sample_count = len(dataset)
-
-    # if type == SamplerType.INFINITE:
-    #     print("sampler: infinite")
-    #     if size > 0:
-    #         raise ValueError("sampler size > 0 is invalid")
-    #     return InfiniteSampler(
-    #         sample_count=sample_count,
-    #         shuffle=shuffle,
-    #         seed=seed,
-    #         advance=advance,
-    #     )
-    # elif type in (SamplerType.SHARDED_INFINITE, SamplerType.SHARDED_INFINITE_NEW):
-    #     print("sampler: sharded infinite")
-    #     if size > 0:
-    #         raise ValueError("sampler size > 0 is invalid")
-    #     # TODO: Remove support for old shuffling
-    #     use_new_shuffle_tensor_slice = type == SamplerType.SHARDED_INFINITE_NEW
-    #     return ShardedInfiniteSampler(
-    #         sample_count=sample_count,
-    #         shuffle=shuffle,
-    #         seed=seed,
-    #         advance=advance,
-    #         use_new_shuffle_tensor_slice=use_new_shuffle_tensor_slice,
-    #     )
-    # elif type == SamplerType.EPOCH:
-    #     print("sampler: epoch")
-    #     if advance > 0:
-    #         raise NotImplementedError("sampler advance > 0 is not supported")
-    #     size = size if size > 0 else sample_count
-    #     print(f"# of samples / epoch: {size:,d}")
-    #     return EpochSampler(
-    #         size=size,
-    #         sample_count=sample_count,
-    #         shuffle=shuffle,
-    #         seed=seed,
-    #     )
     if type == SamplerType.DISTRIBUTED:
         print("sampler: distributed")
         if size > 0:

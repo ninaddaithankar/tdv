@@ -206,7 +206,7 @@ class Kinetics400Dataset(Dataset):
             cap.release()
 
             frames = torch.stack(frames)
-            if self.hparams.model_name in ["baseline_transformer", "tdv_difference_encoder_x_attn"]:
+            if self.hparams.model_name in ["baseline_transformer", "tdv"]:
                 return frames
             else:
                 return frames, label

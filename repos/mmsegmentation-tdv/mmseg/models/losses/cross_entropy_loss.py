@@ -199,7 +199,7 @@ def mask_cross_entropy(pred,
         torch.Tensor: The calculated loss
     """
     assert ignore_index is None, 'BCE loss does not support ignore_index'
-    # TODO: handle these two reserved arguments
+
     assert reduction == 'mean' and avg_factor is None
     num_rois = pred.size()[0]
     inds = torch.arange(0, num_rois, dtype=torch.long, device=pred.device)

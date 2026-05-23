@@ -24,7 +24,7 @@ def _preprare_data(imgs: ImageType, model: BaseModel):
     if isinstance(imgs[0], np.ndarray):
         cfg.test_pipeline[0]['type'] = 'LoadImageFromNDArray'
 
-    # TODO: Consider using the singleton pattern to avoid building
+
     # a pipeline for each inference
     pipeline = Compose(cfg.test_pipeline)
 

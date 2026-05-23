@@ -33,7 +33,7 @@ class EncModule(nn.Module):
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
             act_cfg=act_cfg)
-        # TODO: resolve this hack
+
         # change to 1d
         if norm_cfg is not None:
             encoding_norm_cfg = norm_cfg.copy()

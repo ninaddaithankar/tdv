@@ -132,7 +132,7 @@ class CascadeEncoderDecoder(EncoderDecoder):
 
         out = self.decode_head[0].forward(x)
         for i in range(1, self.num_stages):
-            # TODO support PointRend tensor mode
+
             out = self.decode_head[i].forward(x, out)
 
         return out

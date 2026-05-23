@@ -15,7 +15,7 @@ from data.cv.ego4d_dataloader import Ego4dDataset
 from data.cv.finevideo_dataloader import FineVideoDataset
 from data.cv.something_dataloader import SomethingDataset
 
-from model.cv.tdv.tdv import TDVDifferenceEncoderXAttn
+from model.cv.tdv.tdv import TDV
 from model.cv.tdv.utils import collate_data_and_cast, MaskingGenerator
 from model.model_utils import get_cv_transforms
 
@@ -44,8 +44,8 @@ class ModelTrainer(L.LightningModule):
 		if trained_model is not None:
 			self.model = trained_model
 		else:
-			if self.hparams.model_name == "tdv_difference_encoder_x_attn":
-				self.model = TDVDifferenceEncoderXAttn(self.hparams)
+			if self.hparams.model_name == "tdv":
+				self.model = TDV(self.hparams)
 			else:
 				raise ValueError(f"do not recognize model name: {self.hparams.model_name}")
 
@@ -262,7 +262,7 @@ class ModelTrainer(L.LightningModule):
 		}
 
 	def configure_optimizers_vision(self):
-		if self.hparams.model_name == "tdv_difference_encoder_x_attn":
+		if self.hparams.model_name == "tdv":
 			optimizer_parameters = []
 
 			# -- frame encoder

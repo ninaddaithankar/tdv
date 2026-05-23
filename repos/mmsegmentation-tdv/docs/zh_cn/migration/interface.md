@@ -356,7 +356,6 @@ optim_wrapper = dict(
 - 我们将 `lr_config` 字段删除，并使用新的 `param_scheduler` 替代。
 - 我们删除了与 `warmup` 相关的参数，因为我们使用 scheduler 组合来实现该功能。
 
-新的 scheduler 组合机制非常灵活，您可以使用它来设计多种学习率/动量曲线。有关详细信息，请参见[教程](TODO)。
 
 <table class="docutils">
 <tr>

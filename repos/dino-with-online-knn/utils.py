@@ -884,7 +884,6 @@ def load_image_encoder_from_checkpoint(ckpt, backbone_type, backbone_size):
 
 
 def collate_data_and_cast(samples_list, mask_ratio_tuple, mask_probability, dtype, n_tokens=None, mask_generator=None):
-    # dtype = torch.half  # TODO: Remove
 
     n_global_crops = len(samples_list[0][0]["global_crops"])
     n_local_crops = len(samples_list[0][0]["local_crops"])

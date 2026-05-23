@@ -11,7 +11,7 @@ Defined in [`get_args()`](args.py) and set via command-line arguments.
 |----------|-------------|---------|
 | `--run_name` | Unique identifier for the run (used in logging and checkpoints). | `"test"` |
 | `--modality` | Data modality. Most code assumes `CV`. | `"CV"` |
-| `--model_name` | Model type or name. | `"tdv_difference_encoder_x_attn"` |
+| `--model_name` | Model type or name. | `"tdv"` |
 
 ---
 

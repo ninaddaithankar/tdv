@@ -2,7 +2,7 @@ _base_ = './mae-base_upernet_8xb2-amp-160k_ade20k-512x512.py'
 
 test_pipeline = [
     dict(type='LoadImageFromFile'),
-    # TODO: Refactor 'MultiScaleFlipAug' which supports
+
     # `min_size` feature in `Resize` class
     # img_ratios is [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
     # original image scale is (2048, 512)

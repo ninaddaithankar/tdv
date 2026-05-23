@@ -262,7 +262,7 @@ class SegLocalVisualizer(Visualizer):
             draw_pred: bool = True,
             show: bool = False,
             wait_time: float = 0,
-            # TODO: Supported in mmengine's Viusalizer.
+
             out_file: Optional[str] = None,
             step: int = 0,
             with_labels: Optional[bool] = True) -> None:

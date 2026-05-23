@@ -109,7 +109,7 @@ class FPN(BaseModule):
         elif add_extra_convs:  # True
             if extra_convs_on_inputs:
                 # For compatibility with previous release
-                # TODO: deprecate `extra_convs_on_inputs`
+
                 self.add_extra_convs = 'on_input'
             else:
                 self.add_extra_convs = 'on_output'

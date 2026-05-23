@@ -96,7 +96,6 @@ def main(args):
 	print(f"SLURM_JOB_NUM_NODES: {args.num_nodes}")
 	print("torch.cuda.device_count()", torch.cuda.device_count())
 	if args.gpus == "-1":
-		# -- TODO: verify this works for multi-node scaling
 		num_gpus = args.num_nodes * torch.cuda.device_count()
 	elif '[' in args.gpus:
 		num_gpus = len(args.gpus.split(","))
@@ -131,13 +130,6 @@ def main(args):
 
 	# -- init the model trainer
 	model_trainer = ModelTrainer(args)
-
-
-	# -- if finetuning, load trained pl model
-	if args.execution_mode == "finetune":
-		# -- TODO: test this path; verify lr, lr schedule, dataset are all correct; may need to reset optimizer and lr scheduler
-		assert args.finetuning_model_ckpt != None and args.resume_training_ckpt == "", "Must provide a checkpoint when finetuning and cannot provide a resume_training_ckpt."
-		model_trainer.model = load_trained_pl_model(args.finetuning_model_ckpt, args)
 
 
 	# -- timestamp configs
@@ -251,7 +243,6 @@ def set_trainer(args, wandb_logger, callbacks, stage = "train"):
 
 	args.overfit_batches = int(args.overfit_batches) if int(args.overfit_batches) == args.overfit_batches else args.overfit_batches
 
-	# -- TODO: try devices="auto" and verify testing still works
 	devices = [0] if stage == "test" else args.gpus
 	print("devices: ", devices)
 

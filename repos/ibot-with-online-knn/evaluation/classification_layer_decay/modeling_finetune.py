@@ -251,7 +251,7 @@ class RelativePositionBias(nn.Module):
 # https://github.com/jadore801120/attention-is-all-you-need-pytorch/blob/master/transformer/Models.py#L31
 def get_sinusoid_encoding_table(n_position, d_hid, cls=True): 
     ''' Sinusoid position encoding table ''' 
-    # TODO: make it with torch instead of numpy 
+
     def get_position_angle_vec(position): 
         return [position / np.power(10000, 2 * (hid_j // 2) / d_hid) for hid_j in range(d_hid)] 
 

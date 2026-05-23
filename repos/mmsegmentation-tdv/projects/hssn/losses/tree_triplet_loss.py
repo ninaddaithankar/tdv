@@ -71,7 +71,7 @@ class TreeTripletLoss(nn.Module):
             distance[:, 1:2] = 1 - (feats_anchor * feats_neg).sum(1, True)
 
             # margin always 0.1 + (4-2)/4 since the hierarchy is three level
-            # TODO: should include label of pos is the same as anchor
+
             margin = 0.6 * torch.ones(min_size).to(feats)
 
             tl = distance[:, 0] - distance[:, 1] + margin

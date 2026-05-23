@@ -7,7 +7,7 @@ Supports:
 
 Example — TDV checkpoint on SSv2:
     python eval/probes/train.py \
-        --model_name tdv_difference_encoder_x_attn \
+        --model_name tdv \
         --backbone_type dinov2 \
         --vit_backbone_size base \
         --resume_training_ckpt /path/to/last.ckpt \

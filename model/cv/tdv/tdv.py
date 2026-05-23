@@ -8,7 +8,7 @@ from model.cv.tdv.utils import *
 from model.model_utils import calculate_var_covar, encode_images, create_motion_encoder, create_image_encoder
 
 
-class TDVDifferenceEncoderXAttn(L.LightningModule):
+class TDV(L.LightningModule):
 	"""
 	Temporal Difference Vision (TDV) difference encoder with cross attention.
 	"""

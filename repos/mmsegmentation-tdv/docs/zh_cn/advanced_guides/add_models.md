@@ -181,7 +181,7 @@ loss_decode=dict(type='MyLoss', loss_weight=1.0))
            super().__init__(**kwargs)
 
        def forward(self, data: dict, training: bool=False) -> Dict[str, Any]:
-           # TODO Define the logic for data pre-processing in the forward method
+           #  Define the logic for data pre-processing in the forward method
            pass
    ```
 
@@ -222,7 +222,6 @@ loss_decode=dict(type='MyLoss', loss_weight=1.0))
     class MySegmentor(BaseSegmentor):
         def __init__(self, **kwargs):
             super().__init__(**kwargs)
-            # TODO users should build components of the network here
 
         def loss(self, inputs: Tensor, data_samples: SampleList) -> dict:
             """Calculate losses from a batch of inputs and data samples."""

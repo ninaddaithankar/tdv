@@ -5,7 +5,7 @@
 **Ninad Daithankar\*, Alexi Gladstone\*, Yann LeCun, Heng Ji** &nbsp;(\*Equal Contribution)  
 University of Illinois Urbana-Champaign &nbsp;·&nbsp; New York University
 
-<img src="assets/tdv_intuition.png" width="75%">
+<img src="assets/intuition-whitebg.png" width="75%">
 
 
 TDV is a self-supervised video representation learning method built on a single causal assumption: **the past causes the future**. A frame encoder and motion encoder are trained jointly such that the current frame's representation plus the encoded motion equals the next frame's representation — no augmentations, masking, or cropping required. TDV matches DINO, iBOT baselines on segmentation tasks and surpasses them on optical flow and stereo depth.
@@ -42,20 +42,13 @@ For dataset setup see [data/cv/README.md](data/cv/README.md).
 
 The job script passes all hyperparameters to `train_model.py`. It handles seeding, distributed training setup (DDP), wandb initialization, callback registration (KNN eval, linear probes, DeepSORT tracking), and then calls `trainer.fit()`.
 
-`train_model.py` instantiates `ModelTrainer` from `base_model_trainer.py` — the PyTorch Lightning module responsible for the training loop, validation, optimizer/scheduler setup, gradient logging, and EMA updates. The most important functions there are `eval_step` (calls `model.forward_loss_wrapper` and returns a loss dict) and `configure_optimizers_vision` (sets up separate param groups for the frame encoder vs. motion encoder + heads).
+`train_model.py` instantiates `ModelTrainer` from `base_model_trainer.py` — the PyTorch Lightning module responsible for the training loop, validation, optimizer/scheduler setup, gradient logging, and EMA updates. 
 
 ### Model Architecture: [model/cv/tdv/tdv.py](model/cv/tdv/tdv.py)
 
-<img src="assets/tdv_full_architecture.png" width="75%">
+<img src="assets/architecture-whitebg.png" width="75%">
 
-The core model is `TDVDifferenceEncoderXAttn`, defined in [`model/cv/tdv/tdv.py`](model/cv/tdv/tdv.py). It implements the temporal difference objective end-to-end and is self-contained — if you only need the architecture and loss, this is the only file you need. It holds four main components:
-
-- `frame_encoder` — DINOv2 ViT student encoder that maps frames to patch-level representations
-- `teacher_frame_encoder` — EMA copy of the frame encoder (no gradients); provides stable regression targets
-- `motion_encoder` — cross-attention encoder that takes the RGB difference (next − current frame) conditioned on the current frame's representation to produce a motion delta
-- `dino_head` / `ibot_head` — projection heads for the optional DINO and iBOT categorical losses
-
-The training signal flows as: `frame_encoder(t) + motion_encoder(Δ, t) ≈ teacher_frame_encoder(t+1)`. `forward_loss_wrapper` encodes the current frames through the student encoder, encodes the RGB differences through the motion encoder, and minimizes MSE against the EMA teacher targets. Optionally adds DINO and iBOT categorical cross-entropy losses on top. The EMA teacher is updated after each optimizer step via `on_before_zero_grad`.
+The core model is `TDV`, defined in [`model/cv/tdv/tdv.py`](model/cv/tdv/tdv.py). It implements the temporal difference objective end-to-end and is self-contained — if you only need the architecture and loss, this is the only file you need. 
 
 All hyperparameters live in `hparams/args.py`. Generally you should not need to touch `train_model.py` or `base_model_trainer.py` — new experiments come from adding model variants in `model/cv/` and new datasets in `data/cv/`.
 
@@ -63,15 +56,17 @@ All hyperparameters live in `hparams/args.py`. Generally you should not need to 
 
 ### Training
 
-Set `RUN_NAME`, `aggr_dataset_dirs`, and `wandb_project` in [job_scripts/pretrain.slurm](job_scripts/pretrain.slurm), then launch directly or via the slurm executor:
+Set `RUN_NAME`, `aggr_dataset_dirs`, and `wandb_project` in [job_scripts/pretrain_tdv.slurm](job_scripts/pretrain_tdv.slurm), then run directly or submit to a cluster:
 
 ```bash
-# Local / debugging
-bash job_scripts/pretrain.slurm
+# Local / debugging — runs with bash
+bash job_scripts/pretrain_tdv.slurm
 
-# HPC cluster (prepends a slurm header and submits with sbatch)
-bash slurm_executor.sh <cluster_config> job_scripts/pretrain.slurm
+# HPC cluster — prepends a cluster-specific header and submits with sbatch
+bash slurm_executor.sh <cluster_name> job_scripts/pretrain_tdv.slurm
 ```
+
+The job scripts contain resource `#SBATCH` directives (nodes, GPUs, time) that are the same across clusters. Cluster-specific settings — partition names, account strings, constraints — live in separate header files under [job_scripts/slurm_headers/](job_scripts/slurm_headers/). `slurm_executor.sh` prepends `job_scripts/slurm_headers/<cluster_name>.slurm` to the job script and submits the combined file via `sbatch`. This keeps job scripts cluster-agnostic: to add a new cluster, just add a header file. Every submission is also logged to `logs/job_scripts/executed_slurm_script_contents.log` for easy resubmission.
 
 For a full list of arguments see `hparams/args.py`. For debugging, add `--debug_mode` (disables wandb, enables anomaly detection, limits batches) or `--no_wandb` to log to `logs/console.log` instead.
 
@@ -103,29 +98,31 @@ python tools/train.py configs/tdv/tdv-base_upernet_160k_ade20k-512x512.py \
 ## Repo Structure
 
 ```
-├── train_model.py              # entry point — parses hparams, sets up DDP, calls trainer
-├── base_model_trainer.py       # PyTorch Lightning module — training loop, optimizer, logging
-├── hparams/args.py             # all hyperparameters
+tdv-clean/
+├── train_model.py                          # entry point — parses hparams, sets up DDP, calls trainer
+├── base_model_trainer.py                   # PyTorch Lightning module — training loop, optimizer, logging
+├── hparams/args.py                         # all hyperparameters
 ├── model/
 │   └── cv/
-│       ├── tdv/tdv.py          # TDVDifferenceEncoderXAttn — main model
-│       └── dinov2/             # DINOv2 ViT encoder
-├── data/cv/                    # dataloaders (SSv2, Ego4D, FineVideo, Kinetics, ...)
+│       ├── tdv/tdv.py                      # TDV — main model
+│       └── dinov2/                         # DINOv2 ViT encoder
+├── data/cv/                                # dataloaders (SSv2, Ego4D, FineVideo, Kinetics, ...)
 ├── eval/
-│   ├── flow/                   # optical flow eval (Sintel) — Midway decoder
-│   ├── probes/                 # linear probe eval
-│   ├── knn/                    # KNN eval
-│   └── tracking/               # DeepSORT tracking eval
+│   ├── flow/                               # optical flow eval (Sintel) — Midway decoder
+│   ├── probes/                             # linear probe eval
+│   ├── knn/                                # KNN eval
+│   └── tracking/                           # DeepSORT tracking eval
 ├── repos/
-│   ├── dino-with-online-knn/   # DINO training with online KNN monitoring
-│   ├── ibot-with-online-knn/   # iBOT training with online KNN monitoring
-│   └── mmsegmentation-tdv/     # mmseg fork with TDVBackbone for segmentation eval
+│   ├── dino-with-online-knn/               # DINO training with online KNN monitoring
+│   ├── ibot-with-online-knn/               # iBOT training with online KNN monitoring
+│   └── mmsegmentation-tdv/                 # mmseg fork with TDVBackbone for segmentation eval
 ├── job_scripts/
-│   ├── pretrain.slurm          # pretraining launch script
-│   ├── eval/linear_probe.slurm # linear probe eval (SSv2 / ImageNet)
-│   ├── eval/flow_eval.slurm         # optical flow eval (Sintel / FlyingThings / Chairs)
-│   ├── eval/stereo_depth_eval.slurm # stereo depth eval (SceneFlow)
-│   └── slurm_headers/          # cluster-specific SBATCH headers
+│   ├── pretrain_tdv.slurm                  # pretraining launch script
+│   ├── slurm_headers/                      # cluster-specific SBATCH headers
+│   └── eval/
+│       ├── linear_probe.slurm              # linear probe eval (SSv2 / ImageNet)
+│       ├── flow_eval.slurm                 # optical flow eval (Sintel / FlyingThings / Chairs)
+│       └── stereo_depth_eval.slurm         # stereo depth eval (SceneFlow)
 ├── requirements.txt
 └── slurm_executor.sh
 ```

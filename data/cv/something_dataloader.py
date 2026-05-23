@@ -90,22 +90,6 @@ class SomethingDataset(Dataset):
             self.labels = self.labels[:1000]
             self.file_list = self.file_list[:1000]
 
-        # print("Filtering out non-existent video paths for SSV2")
-        # self.file_list = list(filter(os.path.exists, self.file_list))
-
-        # TODO: report bug, this removes the dataset dir
-        # if self.ignore_filepath:
-        #     with open(self.ignore_filepath) as f:
-        #         self.ignore_files = f.read()
-        #     new_file_list = []
-        #     for fp in self.file_list:
-        #         fp_components = os.path.normpath(fp).split('/')
-        #         new_fp = '/'.join(fp_components[-2:]) 
-        #         if new_fp not in self.ignore_files:
-        #             new_file_list.append(new_fp)
-        #     self.file_list = new_file_list
-
-        
         
     def get_length(self, filename):
         command = self.ffprobe + ' -v quiet -print_format json -show_format "{}"'.format(filename)
