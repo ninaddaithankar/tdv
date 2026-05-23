@@ -1,0 +1,13 @@
+
+work_dirs/
+work_dirs
+*.zip
+__pycache__/
+.*
+.*/
+*.pth
+*.out
+pics/
+!.github/
+!.gitignore
+wandb
