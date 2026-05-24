@@ -5,7 +5,7 @@
 **Ninad Daithankar\*, Alexi Gladstone\*, Yann LeCun, Heng Ji** &nbsp;(\*Equal Contribution)  
 University of Illinois Urbana-Champaign &nbsp;·&nbsp; New York University
 
-<img src="assets/intuition-whitebg.png" width="75%">
+<img src="assets/intuition.gif" width="75%">
 
 
 TDV is a self-supervised video representation learning method built on a single causal assumption: **the past causes the future**. A frame encoder and motion encoder are trained jointly such that the current frame's representation plus the encoded motion equals the next frame's representation — no augmentations, masking, or cropping required. TDV matches DINO, iBOT baselines on segmentation tasks and surpasses them on optical flow and stereo depth.
@@ -98,7 +98,7 @@ python tools/train.py configs/tdv/tdv-base_upernet_160k_ade20k-512x512.py \
 ## Repo Structure
 
 ```
-tdv/
+tdv-clean/
 ├── train_model.py                          # entry point — parses hparams, sets up DDP, calls trainer
 ├── base_model_trainer.py                   # PyTorch Lightning module — training loop, optimizer, logging
 ├── hparams/args.py                         # all hyperparameters
