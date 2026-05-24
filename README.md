@@ -98,7 +98,7 @@ python tools/train.py configs/tdv/tdv-base_upernet_160k_ade20k-512x512.py \
 ## Repo Structure
 
 ```
-tdv-clean/
+tdv/
 ├── train_model.py                          # entry point — parses hparams, sets up DDP, calls trainer
 ├── base_model_trainer.py                   # PyTorch Lightning module — training loop, optimizer, logging
 ├── hparams/args.py                         # all hyperparameters
