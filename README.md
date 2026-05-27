@@ -16,14 +16,18 @@ TDV is a self-supervised video representation learning method built on a single 
 Create a conda environment and install dependencies:
 
 ```bash
+# Create the environment
 conda create -n tdv python=3.11
 conda activate tdv
 
-pip install torch==2.10.0+cu126 torchaudio torchvision --index-url https://download.pytorch.org/whl/cu126  # PyTorch (CUDA 12.6) — works on both x86_64 and aarch64/GH200
+# PyTorch (CUDA 12.6) — works on both x86_64 and aarch64/GH200
+pip install torch==2.10.0+cu126 torchaudio torchvision --index-url https://download.pytorch.org/whl/cu126 
 
-conda install -c conda-forge aiohttp libiconv ffmpeg -y  # aiohttp==3.8.1 can't compile from source on Python 3.11; conda provides a compatible binary
+# aiohttp==3.8.1 can't compile from source on Python 3.11; conda provides a compatible binary
+conda install -c conda-forge aiohttp libiconv ffmpeg -y  
 
-pip install -r requirements.txt --no-deps  # --no-deps avoids conflicts while downloading dependencies
+# --no-deps avoids conflicts while downloading dependencies
+pip install -r requirements.txt --no-deps  
 ```
 
 Set environment variables:
