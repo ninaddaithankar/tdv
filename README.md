@@ -45,20 +45,6 @@ wandb login
 
 For dataset setup see [data/cv/README.md](data/cv/README.md).
 
-## General Code Flow
-
-The job script passes all hyperparameters to `train_model.py`. It handles seeding, distributed training setup (DDP), wandb initialization, callback registration (KNN eval, linear probes, DeepSORT tracking), and then calls `trainer.fit()`.
-
-`train_model.py` instantiates `ModelTrainer` from `base_model_trainer.py` — the PyTorch Lightning module responsible for the training loop, validation, optimizer/scheduler setup, gradient logging, and EMA updates. 
-
-### Model Architecture: [model/cv/tdv/tdv.py](model/cv/tdv/tdv.py)
-
-<img src="assets/architecture-whitebg.png" width="75%">
-
-The core model is `TDV`, defined in [`model/cv/tdv/tdv.py`](model/cv/tdv/tdv.py). It implements the temporal difference objective end-to-end and is self-contained — if you only need the architecture and loss, this is the only file you need. 
-
-All hyperparameters live in `hparams/args.py`. Generally you should not need to touch `train_model.py` or `base_model_trainer.py` — new experiments come from adding model variants in `model/cv/` and new datasets in `data/cv/`.
-
 ## Running the Code
 
 ### Training
@@ -143,6 +129,21 @@ python tools/train.py configs/tdv/tdv-base_upernet_160k_ade20k-512x512.py \
   --cfg-options model.backbone.checkpoint_path=/path/to/checkpoint.ckpt \
                 model.backbone.tdv_repo_path=/path/to/tdv-clean
 ```
+
+## General Code Flow
+
+The job script passes all hyperparameters to `train_model.py`. It handles seeding, distributed training setup (DDP), wandb initialization, callback registration (KNN eval, linear probes, DeepSORT tracking), and then calls `trainer.fit()`.
+
+`train_model.py` instantiates `ModelTrainer` from `base_model_trainer.py` — the PyTorch Lightning module responsible for the training loop, validation, optimizer/scheduler setup, gradient logging, and EMA updates. 
+
+### Model Architecture: [model/cv/tdv/tdv.py](model/cv/tdv/tdv.py)
+
+<img src="assets/architecture-whitebg.png" width="75%">
+
+The core model is `TDV`, defined in [`model/cv/tdv/tdv.py`](model/cv/tdv/tdv.py). It implements the temporal difference objective end-to-end and is self-contained — if you only need the architecture and loss, this is the only file you need. 
+
+All hyperparameters live in `hparams/args.py`. Generally you should not need to touch `train_model.py` or `base_model_trainer.py` — new experiments come from adding model variants in `model/cv/` and new datasets in `data/cv/`.
+
 
 ## Repo Structure
 
