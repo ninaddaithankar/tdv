@@ -43,6 +43,8 @@ Login to wandb:
 wandb login
 ```
 
+> **WandB Tip:** in the wandb UI, switch the x-axis from the default *Step* to `trainer/global_step` to see correct plots — the default step counter does not account for gradient accumulation.
+
 For dataset setup see [data/cv/README.md](data/cv/README.md).
 
 ## Running the Code
@@ -99,7 +101,9 @@ conda activate tdv
 bash slurm_executor.sh <cluster_name> job_scripts/pretrain_tdv.slurm
 ```
 
-`slurm_executor.sh` prepends `job_scripts/slurm_headers/<cluster_name>.slurm` to the job script and submits via `sbatch`. To add a new cluster, just add a header file. Every submission is logged to `logs/job_scripts/executed_slurm_script_contents.log`.
+`slurm_executor.sh` prepends `job_scripts/slurm_headers/<cluster_name>.slurm` to the job script and submits via `sbatch`. To add a new cluster, just add a new header file. Every submission is logged to `logs/job_scripts/executed_slurm_script_contents.log`.
+ 
+> **SLURM note:** You can also just add a slurm header to the existing bash scripts and execute scripts using sbatch, which is more standard, but this slurm_executor.sh is super helpful while switching between clusters.
 
 ---
 
