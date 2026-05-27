@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH --account=YOUR_ACCOUNT
 #SBATCH --partition=YOUR_PARTITION
 

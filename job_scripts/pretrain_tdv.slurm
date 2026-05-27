@@ -60,7 +60,7 @@ ARGS=(
     --dino_head_prototype_dim 32768
 
     # Hardware
-    --gpus "[0, 1]"
+    --gpus "-1"
     --set_matmul_precision "medium"
     --float_precision "bf16-mixed"
     --is_slurm_run
@@ -89,6 +89,7 @@ ARGS=(
     --eval_train_num_samples_per_class -1
     --eval_val_num_samples_per_class -1
     --run_eval_on_student
+    --knn_eval_data_dir "/path/to/imagenet"
 
     # Wandb
     --wandb_project "YOUR_PROJECT"

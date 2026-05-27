@@ -18,10 +18,13 @@ Create a conda environment and install dependencies:
 ```bash
 conda create -n tdv python=3.11
 conda activate tdv
-pip install -r requirements.txt
-```
 
-> **GH200 / aarch64 clusters:** standard PyTorch wheels don't work out of the box. Follow the steps in [requirements/readme.md](requirements/readme.md) and use `requirements/gh200.txt` instead.
+pip install torch==2.10.0+cu126 torchaudio torchvision --index-url https://download.pytorch.org/whl/cu126  # PyTorch (CUDA 12.6) — works on both x86_64 and aarch64/GH200
+
+conda install -c conda-forge aiohttp libiconv ffmpeg -y  # aiohttp==3.8.1 can't compile from source on Python 3.11; conda provides a compatible binary
+
+pip install -r requirements.txt --no-deps  # --no-deps avoids conflicts while downloading dependencies
+```
 
 Set environment variables:
 
@@ -56,19 +59,61 @@ All hyperparameters live in `hparams/args.py`. Generally you should not need to 
 
 ### Training
 
-Set `RUN_NAME`, `aggr_dataset_dirs`, and `wandb_project` in [job_scripts/pretrain_tdv.slurm](job_scripts/pretrain_tdv.slurm), then run directly or submit to a cluster:
+#### Running locally
+
+In [job_scripts/pretrain_tdv.slurm](job_scripts/pretrain_tdv.slurm), set:
+
+| Field | Location | What to set |
+|---|---|---|
+| `RUN_NAME` | `export RUN_NAME=` | name for this run (used in logs and wandb) |
+| `--aggr_dataset_dirs` | `ARGS` block | path(s) to your dataset(s) |
+| `--wandb_project` | `ARGS` block | your wandb project name |
+| `--gpus` | `ARGS` block | e.g. `"[0]"` for single GPU, `"[0, 1]"` for two (default is -1 which uses all GPUs) |
+| `--knn_eval_data_dir` | `ARGS` block | path to your ImageNet folder if downloaded elsewhere |
+
+Then run:
 
 ```bash
-# Local / debugging — runs with bash
 bash job_scripts/pretrain_tdv.slurm
+```
 
-# HPC cluster — prepends a cluster-specific header and submits with sbatch
+For debugging, also add `--debug_mode` to the `ARGS` block — it disables wandb, enables anomaly detection, and limits batches. Or add `--no_wandb` to skip wandb without the other debug constraints.
+
+#### Running on a cluster (SLURM)
+
+**1. Set run-specific fields** in [job_scripts/pretrain_tdv.slurm](job_scripts/pretrain_tdv.slurm) — same as above (`RUN_NAME`, `--aggr_dataset_dirs`, `--wandb_project`, `--knn_eval_data_dir`). 
+
+Then, update the `#SBATCH` header lines at the top of the file:
+
+| Field | What to set |
+|---|---|
+| `#SBATCH --job-name` | same as `RUN_NAME` |
+| `#SBATCH --output` | log path, e.g. `logs/slurm/YOUR_RUN_NAME` |
+| `#SBATCH --nodes` | number of nodes |
+| `#SBATCH --gpus-per-node` | GPUs per node |
+| `#SBATCH --time` | wall time limit |
+
+**2. Set cluster-specific settings** in your cluster's header file under [job_scripts/slurm_headers/](job_scripts/slurm_headers/) (copy `example_gh200.slurm` to `<cluster_name>.slurm`):
+
+| Field | What to set |
+|---|---|
+| `#SBATCH --account` | your cluster account/allocation |
+| `#SBATCH --partition` | partition name for your cluster |
+
+**3. Submit:**
+
+Make sure the `tdv` conda environment is activated before submitting — SLURM inherits it from the shell that calls `sbatch`.
+
+```bash
+conda activate tdv
 bash slurm_executor.sh <cluster_name> job_scripts/pretrain_tdv.slurm
 ```
 
-The job scripts contain resource `#SBATCH` directives (nodes, GPUs, time) that are the same across clusters. Cluster-specific settings — partition names, account strings, constraints — live in separate header files under [job_scripts/slurm_headers/](job_scripts/slurm_headers/). `slurm_executor.sh` prepends `job_scripts/slurm_headers/<cluster_name>.slurm` to the job script and submits the combined file via `sbatch`. This keeps job scripts cluster-agnostic: to add a new cluster, just add a header file. Every submission is also logged to `logs/job_scripts/executed_slurm_script_contents.log` for easy resubmission.
+`slurm_executor.sh` prepends `job_scripts/slurm_headers/<cluster_name>.slurm` to the job script and submits via `sbatch`. To add a new cluster, just add a header file. Every submission is logged to `logs/job_scripts/executed_slurm_script_contents.log`.
 
-For a full list of arguments see `hparams/args.py`. For debugging, add `--debug_mode` (disables wandb, enables anomaly detection, limits batches) or `--no_wandb` to log to `logs/console.log` instead.
+---
+
+For a full list of training arguments see `hparams/args.py`.
 
 ### Evaluation
 
@@ -132,11 +177,11 @@ tdv/
 If you find this repo useful, please consider giving a star ⭐ and a citation 🙃. If you have any questions, feel free to post them on github issues, hugging face daily papers, or email me (ninaddaithankar@gmail.com).
 
 ```bibtex
-@inproceedings{daithankar2026tdv,
+@article{daithankar2025tdv,
   title={You Don't Need Strong Assumptions: Visual Representation Learning via Temporal Differences},
   author={Daithankar, Ninad and Gladstone, Alexi and LeCun, Yann and Ji, Heng},
-  booktitle={Advances in Neural Information Processing Systems},
-  year={2026},
+  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  year={2025},
   url={https://temporal-difference-vision.github.io}
 }
 ```
