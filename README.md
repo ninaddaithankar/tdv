@@ -1,6 +1,6 @@
 # 🎬 You Don't Need Strong Assumptions: Temporal Difference Visual Representation Learning
 
-📚 [Paper](https://temporal-difference-vision.github.io/static/pdfs/TDV-arxiv.pdf) | 🌐 [Website](https://temporal-difference-vision.github.io/) | 🧾 [Bibtex](#citation)
+📚 [Paper](https://temporal-difference-vision.github.io/static/pdfs/tdv.pdf) | 🌐 [Website](https://temporal-difference-vision.github.io/) | 🧾 [Bibtex](#citation)
 
 **Ninad Daithankar\*, Alexi Gladstone\*, Yann LeCun, Heng Ji** &nbsp;(\*Equal Contribution)  
 University of Illinois Urbana-Champaign &nbsp;·&nbsp; New York University
